@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class GameManager : SingletonWithInitialization<GameManager>, IAwakeInitializationSubject
@@ -63,6 +64,14 @@ public class GameManager : SingletonWithInitialization<GameManager>, IAwakeIniti
     public void DisableHead()
     {
         isHeadActive = false;
+        head.GetComponent<Rigidbody2D>().isKinematic = true;
+    }
+
+    public void ChangeHeadPhysics()
+    {
+        var headRb = head.GetComponent<Rigidbody2D>();
+        var isHeadKinematic = headRb.isKinematic;
+        headRb.isKinematic = !isHeadKinematic;
     }
 }
 

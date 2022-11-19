@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - Neck
+  - Body
+  - Head
   layers:
   - Default
   - TransparentFX

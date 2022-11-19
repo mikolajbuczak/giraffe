@@ -4,6 +4,7 @@ public class GiraffeMovement : MonoBehaviour
 {
     [Header("Setup")]
     [SerializeField] LayerMask groundLayer;
+    [SerializeField] Collider2D collider2d;
 
     [Header("Keys")]
     [SerializeField] KeyCode moveLeftKey = KeyCode.A;
@@ -16,11 +17,10 @@ public class GiraffeMovement : MonoBehaviour
     [SerializeField, Range(1, 100)] float jumpForce = 4.5f;
     [SerializeField, Range(0, 1f)] float slide = 0.5f;
     [SerializeField, Range(0, 1f)] float movementSmoothing = 0.01f;
-    [SerializeField] float collisionBoxLength = 0.1f;
+    [SerializeField] float collisionBoxLength = 0.5f;
     [SerializeField, Range(0.01f, 1f)] float collisionBoxSize = 0.90f;
 
     Rigidbody2D rb;
-    Collider2D collider2d;
     KeyCode currentInput = KeyCode.None;
     Vector2 currentVelocity = Vector2.zero;
     // Need this flag as FixedUpdate() might not pick up on quick tap of the jump key.
@@ -29,7 +29,6 @@ public class GiraffeMovement : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        collider2d = GetComponent<Collider2D>();
 
         if (groundLayer.value == 0)
         {
@@ -93,7 +92,6 @@ public class GiraffeMovement : MonoBehaviour
 
         if (IsColliding(Vector2.down))
         {
-            Debug.Log("Jump");
             rb.AddForce(new Vector2(0f, jumpForce * rb.gravityScale * rb.mass), ForceMode2D.Impulse);
         }
     }
@@ -103,7 +101,7 @@ public class GiraffeMovement : MonoBehaviour
         var playerBounds = collider2d.bounds;
         var hit = Physics2D.BoxCast(
             origin: playerBounds.center,
-            size: playerBounds.size * collisionBoxSize,
+            size: playerBounds.size,
             angle: 0f,
             direction: direction,
             distance: collisionBoxLength,
@@ -127,6 +125,22 @@ public class GiraffeMovement : MonoBehaviour
         else
         {
             currentInput = KeyCode.None;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        var otherRb = collision.collider.GetComponent<Rigidbody2D>();
+
+        if (otherRb == null)
+        {
+            return;
+        }
+
+        if (otherRb.CompareTag("Head"))
+        {
+            otherRb.velocity = Vector2.zero;
+            otherRb.angularVelocity = 0f;
         }
     }
 }

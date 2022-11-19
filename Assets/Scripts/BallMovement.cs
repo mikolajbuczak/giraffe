@@ -15,10 +15,10 @@ public class BallMovement : MonoBehaviour
     [SerializeField] private bool useTorque = true; // Whether or not to use torque to move the ball.
     [SerializeField] private float maxVelocity = 25; // The maximum velocity the ball can rotate at.
     [SerializeField] private float jumpPower = 2; // The force added to the ball when it jumps.
+    [SerializeField] float collisionBoxLength = 0.5f;
 
     bool wasJumpPressed;
-    Vector2 currentDirection = Vector3.zero; 
-    private const float groundRayLength = 1f; // The length of the ray to check if the ball is grounded.
+    Vector2 currentDirection = Vector3.zero;
     private Rigidbody2D rb;
     private CircleCollider2D collider2d;
 
@@ -35,8 +35,8 @@ public class BallMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        HandleMovement(currentDirection);
         HandleJump();
+        HandleMovement(currentDirection);
     }
 
     private void GetInput()
@@ -80,8 +80,9 @@ public class BallMovement : MonoBehaviour
 
         wasJumpPressed = false;
 
-        if (IsColliding(Vector2.down))
+        if (IsColliding())
         {
+            Debug.Log("Ball jump");
             rb.AddForce(new Vector2(0f, jumpPower * rb.gravityScale), ForceMode2D.Impulse);
         }
     }
@@ -92,17 +93,26 @@ public class BallMovement : MonoBehaviour
         if (rb.angularVelocity > maxVelocity) { rb.angularVelocity = maxVelocity; }
     }
 
-    private bool IsColliding(Vector2 direction)
+    private bool IsColliding()
     {
-        var playerBounds = collider2d.bounds;
-        var hit = Physics2D.BoxCast(
-            origin: playerBounds.center,
-            size: playerBounds.size,
-            angle: 0f,
-            direction: direction,
-            distance: 0.5f,
-            layerMask: groundLayer);
+        var hit = Physics2D.Raycast(transform.position, Vector2.down, collisionBoxLength, groundLayer);
 
         return hit.collider != null;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        var otherRb = collision.collider.GetComponent<Rigidbody2D>();
+
+        if (otherRb == null)
+        {
+            return;
+        }
+
+        if (otherRb.CompareTag("Body") || otherRb.CompareTag("Head"))
+        {
+            otherRb.velocity = Vector2.zero;
+            otherRb.angularVelocity = 0f;
+        }
     }
 }

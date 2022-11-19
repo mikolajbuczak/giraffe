@@ -240,7 +240,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   neck: {fileID: 3263428568812622099}
+  neckOrigin: {fileID: 3263428568676329608}
   movementSpeed: 3
+  minDistance: 2
+  maxDistance: 10
 --- !u!50 &3263428568756421223
 Rigidbody2D:
   serializedVersion: 4
@@ -355,8 +358,8 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: -6.1, y: -2.8, z: 0}
-  - {x: -4.5, y: -1, z: 1}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1

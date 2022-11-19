@@ -59,18 +59,22 @@ public class GiraffeMovement : MonoBehaviour
         if (currentInput == moveLeftKey && result > -horizontalMaxSpeed)
         {
             result -= horizontalAcceleration * Time.deltaTime;
+            transform.rotation = new Quaternion(0, 180, 0, 0);
         }
         else if (currentInput == moveLeftKey)
         {
             result = -horizontalMaxSpeed;
+            transform.rotation = new Quaternion(0, 180, 0, 0);
         }
         else if (currentInput == moveRightKey && result < horizontalMaxSpeed)
         {
             result += horizontalAcceleration * Time.deltaTime;
+            transform.rotation = new Quaternion(0, 0, 0, 0);
         }
         else if (currentInput == moveRightKey)
         {
             result = horizontalMaxSpeed;
+            transform.rotation = new Quaternion(0, 0, 0, 0);
         }
         else
         {

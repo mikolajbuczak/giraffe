@@ -6,7 +6,7 @@ public class GameManager : SingletonWithInitialization<GameManager>, IAwakeIniti
     public GameObject giraffe;
     public GameObject head;
     public GameObject ball;
-    
+
     [HideInInspector]
     public Players currentPlayer = Players.Ball;
 
@@ -72,6 +72,11 @@ public class GameManager : SingletonWithInitialization<GameManager>, IAwakeIniti
         var headRb = head.GetComponent<Rigidbody2D>();
         var isHeadKinematic = headRb.isKinematic;
         headRb.isKinematic = !isHeadKinematic;
+    }
+
+    public void EndLevel()
+    {
+        Debug.Log("End level");
     }
 }
 

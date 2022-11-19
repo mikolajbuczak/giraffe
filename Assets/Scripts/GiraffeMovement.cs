@@ -14,7 +14,7 @@ public class GiraffeMovement : MonoBehaviour
     [Header("Modifiers")]
     [SerializeField, Range(1, 500)] float horizontalAcceleration = 150f;
     [SerializeField, Range(1, 500)] float horizontalMaxSpeed = 15f;
-    [SerializeField, Range(1, 100)] float jumpForce = 4.5f;
+    [SerializeField] float jumpForce = 4.5f;
     [SerializeField, Range(0, 1f)] float slide = 0.5f;
     [SerializeField, Range(0, 1f)] float movementSmoothing = 0.01f;
     [SerializeField] float collisionBoxLength = 0.5f;

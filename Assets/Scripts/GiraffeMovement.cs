@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GiraffeMovement : MonoBehaviour
@@ -18,13 +19,13 @@ public class GiraffeMovement : MonoBehaviour
     [SerializeField, Range(0, 1f)] float slide = 0.5f;
     [SerializeField, Range(0, 1f)] float movementSmoothing = 0.01f;
     [SerializeField] float collisionBoxLength = 0.5f;
-    [SerializeField, Range(0.01f, 1f)] float collisionBoxSize = 0.90f;
 
     Rigidbody2D rb;
     KeyCode currentInput = KeyCode.None;
     Vector2 currentVelocity = Vector2.zero;
     // Need this flag as FixedUpdate() might not pick up on quick tap of the jump key.
     bool wasJumpPressed;
+    private bool isJumping = false;
 
     private void Start()
     {
@@ -55,31 +56,34 @@ public class GiraffeMovement : MonoBehaviour
                                 (currentInput == moveRightKey && velocity.x < 0f);
 
         var result = switchedDirection ? 0f : velocity.x;
+        var rotation = transform.rotation.y;
 
         if (currentInput == moveLeftKey && result > -horizontalMaxSpeed)
         {
             result -= horizontalAcceleration * Time.deltaTime;
-            transform.rotation = new Quaternion(0, 180, 0, 0);
+            rotation = 180f;
         }
         else if (currentInput == moveLeftKey)
         {
             result = -horizontalMaxSpeed;
-            transform.rotation = new Quaternion(0, 180, 0, 0);
+            rotation = 180f;
         }
         else if (currentInput == moveRightKey && result < horizontalMaxSpeed)
         {
             result += horizontalAcceleration * Time.deltaTime;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
+            rotation = 0;
         }
         else if (currentInput == moveRightKey)
         {
             result = horizontalMaxSpeed;
-            transform.rotation = new Quaternion(0, 0, 0, 0);
+            rotation = 0;
         }
         else
         {
             result *= slide;
         }
+
+        RotateGiraffe(rotation);
 
         rb.velocity = Vector2.SmoothDamp(
             current: velocity,
@@ -88,16 +92,29 @@ public class GiraffeMovement : MonoBehaviour
             smoothTime: movementSmoothing);
     }
 
+    private void RotateGiraffe(float rotation)
+    {
+        transform.rotation = new Quaternion(0, rotation, 0, 0);
+    }
+
     private void HandleJump()
     {
         if (!wasJumpPressed) return;
 
         wasJumpPressed = false;
 
-        if (IsColliding(Vector2.down))
+        if (IsColliding(Vector2.down) && !isJumping)
         {
-            rb.AddForce(new Vector2(0f, jumpForce * rb.gravityScale * rb.mass), ForceMode2D.Impulse);
+            StartCoroutine(Jump());
         }
+    }
+
+    private IEnumerator Jump()
+    {
+        isJumping = true;
+        rb.AddForce(new Vector2(0f, jumpForce * rb.gravityScale * rb.mass), ForceMode2D.Impulse);
+        yield return new WaitForSeconds(0.4f);
+        isJumping = false;
     }
 
     bool IsColliding(Vector2 direction)

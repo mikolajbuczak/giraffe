@@ -145,5 +145,5 @@ MonoBehaviour:
   movePower: 10
   useTorque: 0
   maxVelocity: 25
-  jumpPower: 1
+  jumpPower: 5
   collisionBoxLength: 0.7

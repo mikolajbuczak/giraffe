@@ -20,12 +20,11 @@ public class BallMovement : MonoBehaviour
     bool wasJumpPressed;
     Vector2 currentDirection = Vector3.zero;
     private Rigidbody2D rb;
-    private CircleCollider2D collider2d;
+    private bool isJumping = false;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        collider2d = GetComponent<CircleCollider2D>();
     }
 
     private void Update()
@@ -80,11 +79,18 @@ public class BallMovement : MonoBehaviour
 
         wasJumpPressed = false;
 
-        if (IsColliding())
+        if (IsColliding() && !isJumping)
         {
-            Debug.Log("Ball jump");
-            rb.AddForce(new Vector2(0f, jumpPower * rb.gravityScale), ForceMode2D.Impulse);
+            StartCoroutine(Jump());
         }
+    }
+
+    private IEnumerator Jump()
+    {
+        isJumping = true;
+        rb.AddForce(new Vector2(0f, jumpPower * rb.gravityScale), ForceMode2D.Impulse);
+        yield return new WaitForSeconds(0.4f);
+        isJumping = false;
     }
 
     private void ClampAngularVelocity()
@@ -96,6 +102,7 @@ public class BallMovement : MonoBehaviour
     private bool IsColliding()
     {
         var hit = Physics2D.Raycast(transform.position, Vector2.down, collisionBoxLength, groundLayer);
+        Debug.Log(hit.collider.gameObject.name);
 
         return hit.collider != null;
     }

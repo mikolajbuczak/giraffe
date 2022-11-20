@@ -16,6 +16,7 @@ public class BallMovement : MonoBehaviour
     [SerializeField] private float maxVelocity = 25; // The maximum velocity the ball can rotate at.
     [SerializeField] private float jumpPower = 2; // The force added to the ball when it jumps.
     [SerializeField] float collisionBoxLength = 0.5f;
+    [SerializeField] AudioSource jumpSound;
 
     bool wasJumpPressed;
     Vector2 currentDirection = Vector3.zero;
@@ -87,6 +88,7 @@ public class BallMovement : MonoBehaviour
 
     private IEnumerator Jump()
     {
+        jumpSound.Play();
         isJumping = true;
         rb.AddForce(new Vector2(0f, jumpPower * rb.gravityScale), ForceMode2D.Impulse);
         yield return new WaitForSeconds(0.4f);
@@ -102,7 +104,6 @@ public class BallMovement : MonoBehaviour
     private bool IsColliding()
     {
         var hit = Physics2D.Raycast(transform.position, Vector2.down, collisionBoxLength, groundLayer);
-        Debug.Log(hit.collider.gameObject.name);
 
         return hit.collider != null;
     }
